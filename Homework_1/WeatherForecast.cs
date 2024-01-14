@@ -1,13 +1,18 @@
-namespace Homework_1
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+[ApiController]
+[Route("api/[controller]")]
+public class BooksController : ControllerBase
 {
-    public class WeatherForecast
+    [HttpGet]
+    public IActionResult GetBooks()
     {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-
-        public string? Summary { get; set; }
+        var books = new List<object>
+        {
+            new { id = 1, name = "test1" },
+            new { id = 2, name = "test2" }
+        };
+        return Ok(books);
     }
 }
