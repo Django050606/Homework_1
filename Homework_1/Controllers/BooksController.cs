@@ -36,15 +36,17 @@ namespace Homework_1.Controllers
 
             var book = new Book()
             {
-                Id = Guid.NewGuid(),
+                
                 Name = addBookRequest.Name,
+                Author = addBookRequest.Author,
+                YearOfWriting = addBookRequest.YearOfWriting,
                 
             };
 
             dbContext.Books.Add(book);
             dbContext.SaveChanges();
 
-            return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
+            return Ok(dbContext.Books); 
         }
 
 
@@ -52,60 +54,23 @@ namespace Homework_1.Controllers
 
 
 
-        [HttpPut("{id}")]
-        public ActionResult PutBook(int id, [FromBody] Book updatedBook)
+        [HttpPut]
+        [Route("api/[controller]")]
+        public async Task<IActionResult> UpdateBook([FromRoute] Guid id, UpdateBookRequest updateBookRequest)
         {
-            if (updatedBook == null)
+            var Book=dbContext.Books.Find(id);
+            if (Book != null)
             {
-                return BadRequest("Invalid data. Book data is null.");
+                Book.Name= updateBookRequest.Name;
+                Book.Author=updateBookRequest.Author;
+                Book.YearOfWriting=updateBookRequest.YearOfWriting;
+                
+                await dbContext.SaveChangesAsync();
+                return Ok(Book);
             }
+            return NotFound();
 
-            var existingBook = dbContext.Books.Find(id);
-
-            if (existingBook == null)
-            {
-                return NotFound();
-            }
-
-            existingBook.Name = updatedBook.Name;
-
-            dbContext.SaveChanges();
-
-            return Ok(existingBook);
         }
 
-
-
-        [HttpDelete("{id}")]
-        public ActionResult DeleteBookById(int id)
-        {
-            var bookToRemove = dbContext.Books.Find(id);
-
-            if (bookToRemove != null)
-            {
-                dbContext.Books.Remove(bookToRemove);
-                dbContext.SaveChanges();
-                return Ok(bookToRemove);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<Book> GetBookById(int id)
-        {
-            var book = dbContext.Books.Find(id);
-
-            if (book != null)
-            {
-                return Ok(book);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
     }
 }
