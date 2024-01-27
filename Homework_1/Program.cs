@@ -1,4 +1,5 @@
 using Homework_1.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<BooksApiDbContext>(options => options.UseInMemoryDatabase("BooksDb"));
-var app = builder.Build();
+//builder.Services.AddDbContext<BooksApiDbContext>(options => options.UseInMemoryDatabase("BooksDb"));
+builder.Services.AddDbContext<BooksAPIDbContext>(options => 
+options.UseSqlServer(builder.Configuration.GetConnectionString("BooksApiConnectionString")));
+    var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
