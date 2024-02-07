@@ -12,9 +12,9 @@ namespace Homework_1.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private readonly BooksApiDbContext dbContext;
+        private readonly BooksAPIDbContext dbContext;
 
-        public BooksController(BooksApiDbContext dbContext)
+        public BooksController(BooksAPIDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

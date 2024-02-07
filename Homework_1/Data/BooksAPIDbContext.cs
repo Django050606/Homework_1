@@ -8,7 +8,7 @@ namespace Homework_1.Data
         public BooksAPIDbContext(DbContextOptions options) : base(options)
         {
         }
-    
+
         public DbSet<Book> Books {  get; set; }
     }
 }
