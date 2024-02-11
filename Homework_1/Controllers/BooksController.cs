@@ -1,13 +1,16 @@
 ﻿using Homework_1.Data;
 using Homework_1.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 
 namespace Homework_1.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
@@ -19,32 +22,35 @@ namespace Homework_1.Controllers
             this.dbContext = dbContext;
         }
 
+
+      
+
+
+
         [HttpGet]
         public ActionResult<IEnumerable<Book>> GetBooks() => Ok(dbContext.Books.ToList());
 
 
         [HttpPost]
-        public IActionResult PostBook(AddBookRequest addBookRequest)
+        public IActionResult PostBooks(List<AddBookRequest> addBookRequests)
         {
-            if (addBookRequest == null)
+            if (addBookRequests == null || !addBookRequests.Any())
             {
-                return BadRequest("Invalid data. Book data is null.");
+                return BadRequest("Invalid data. Book data is null or empty.");
             }
 
-            var book = new Book()
+            var books = addBookRequests.Select(addBookRequest => new Book
             {
-                
                 Name = addBookRequest.Name,
                 Author = addBookRequest.Author,
                 YearOfWriting = addBookRequest.YearOfWriting,
-                
-            };
+            }).ToList();
 
-            dbContext.Books.Add(book);
+            dbContext.Books.AddRange(books);
             dbContext.SaveChanges();
 
-            return Ok(dbContext.Books); 
-        }
+            return Ok(dbContext.Books);
+        }   
 
 
 
@@ -69,6 +75,9 @@ namespace Homework_1.Controllers
 
             return Ok(book);
         }
+
+      
+
 
         [HttpGet]
         [Route("{id:guid}")]
@@ -96,5 +105,43 @@ namespace Homework_1.Controllers
             }
             return NotFound();
         }
+
+
+        [HttpGet("search")]
+        [ProducesResponseType(typeof(IEnumerable<Book>), 200)]
+        public ActionResult<IEnumerable<Book>> GetBooksBySearch(
+    [FromQuery] int year,
+    [FromQuery] string author)
+ 
+        {
+            IQueryable<Book> query = dbContext.Books;
+
+            // Filter by Author
+            if (!string.IsNullOrEmpty(author))
+            {
+                query = query.Where(book => book.Author == author);
+            }
+
+            // Filter by Year
+            if (year > 0)
+            {
+                query = query.Where(book => book.YearOfWriting == year);
+            }
+
+            
+
+            var result = query.ToList();
+            return Ok(result);
+        }
+
+        public enum SortOrderEnum
+        {
+            Ascending,
+            Descending
+        }
+
+
+
+
     }
 }
