@@ -22,16 +22,13 @@ namespace Homework_1.Controllers
             this.dbContext = dbContext;
         }
 
-
-      
-
-
-
         [HttpGet]
+        
         public ActionResult<IEnumerable<Book>> GetBooks() => Ok(dbContext.Books.ToList());
 
 
         [HttpPost]
+        //[Authorize]
         public IActionResult PostBooks(List<AddBookRequest> addBookRequests)
         {
             if (addBookRequests == null || !addBookRequests.Any())
@@ -58,6 +55,7 @@ namespace Homework_1.Controllers
 
 
         [HttpPut("{id}")]
+        //[Authorize]
         public async Task<IActionResult> UpdateBook([FromRoute] Guid id, UpdateBookRequest updateBookRequest)
         {
             var book = dbContext.Books.Find(id);
@@ -93,6 +91,7 @@ namespace Homework_1.Controllers
         }
 
         [HttpDelete]
+        //[Authorize]
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteBook([FromRoute]Guid id)
         {
